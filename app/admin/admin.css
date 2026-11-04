@@ -1,0 +1,16 @@
+/* Yönetim paneli: sitenin serif gövde yazısı yerine sade sistem yazı tipi. */
+.admin-root {
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.admin-root :where(h1, h2, h3, h4, p, label, legend, button, input, select, textarea, a, li, td, th) {
+  font-family: inherit;
+}
+.admin-root ::selection {
+  background: rgb(20 20 19 / 0.85);
+  color: #fff;
+}

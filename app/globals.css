@@ -1,27 +1,28 @@
 @import "tailwindcss";
 
+/*
+ * Nötr palet: siyah, kırık beyaz, açık gri. Rengi kapaklar taşır.
+ */
 :root {
-  --paper: #f2efe7;
-  --paper-2: #e9e5da;
-  --ink: #141413;
-  --ink-2: #3b3a36;
-  --muted: #6f6b61;
-  --rule: rgb(20 20 19 / 0.16);
-  --night: #0e100f;
-  --night-2: #171a18;
-  --signal: #d9ff3f;
+  --paper: #f7f6f2;
+  --paper-2: #eceae4;
+  --paper-3: #e1dfd8;
+  --ink: #121212;
+  --ink-2: #3a3936;
+  --muted: #6e6b65;
+  --rule: rgb(18 18 18 / 0.12);
+  --night: #121212;
 }
 
 @theme inline {
   --color-paper: var(--paper);
   --color-paper-2: var(--paper-2);
+  --color-paper-3: var(--paper-3);
   --color-ink: var(--ink);
   --color-ink-2: var(--ink-2);
   --color-muted: var(--muted);
   --color-rule: var(--rule);
   --color-night: var(--night);
-  --color-night-2: var(--night-2);
-  --color-signal: var(--signal);
   --font-display: var(--font-big-shoulders);
   --font-serif: var(--font-newsreader);
   --font-mono: var(--font-jetbrains);
@@ -44,71 +45,43 @@ body {
   color: var(--paper);
 }
 
-/* Logodaki "k i t a p" gibi geniş aralıklı mono etiket */
+/* Logodaki "k i t a p" gibi geniş aralıklı küçük etiket */
 .label {
   font-family: var(--font-jetbrains), ui-monospace, monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.18em;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
 .display {
   font-family: var(--font-big-shoulders), "Arial Narrow", sans-serif;
   font-variation-settings: "opsz" 72;
-  line-height: 0.88;
-  letter-spacing: -0.005em;
+  line-height: 0.92;
   text-transform: uppercase;
 }
 
-/* Kapak: hafif sırt gölgesi ve kâğıt kalınlığı */
-.book {
-  position: relative;
+/* Kapak: düz ve net; yalnızca ince bir gölge ile zeminden ayrılır */
+.cover {
   box-shadow:
-    0 1px 0 rgb(0 0 0 / 0.04),
-    0 18px 30px -18px rgb(20 20 19 / 0.45),
-    0 6px 10px -6px rgb(20 20 19 / 0.25);
-  transition:
-    transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
-    box-shadow 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+    0 0 0 1px rgb(18 18 18 / 0.06),
+    0 10px 24px -14px rgb(18 18 18 / 0.35);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
 }
-.book::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    rgb(0 0 0 / 0.18) 0,
-    rgb(255 255 255 / 0.14) 1.2%,
-    rgb(0 0 0 / 0.06) 3%,
-    transparent 7%
-  );
-}
-.group:hover .book,
-.group:focus-visible .book {
-  transform: translateY(-6px) rotate(-0.6deg);
+.group:hover .cover,
+.group:focus-visible .cover {
+  transform: translateY(-3px);
   box-shadow:
-    0 1px 0 rgb(0 0 0 / 0.04),
-    0 30px 40px -20px rgb(20 20 19 / 0.5),
-    0 10px 14px -8px rgb(20 20 19 / 0.28);
+    0 0 0 1px rgb(18 18 18 / 0.06),
+    0 16px 28px -14px rgb(18 18 18 / 0.4);
 }
 
-.marquee {
-  animation: marquee 40s linear infinite;
+.fade-in {
+  animation: fade-in 0.6s ease both;
 }
-@keyframes marquee {
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-.rise {
-  animation: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-@keyframes rise {
+@keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(8px);
   }
 }
 

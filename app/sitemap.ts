@@ -1,17 +1,28 @@
 import type { MetadataRoute } from "next";
-import { getAuthors, getBooks } from "@/lib/catalog";
-import { SITE } from "@/lib/site";
+import { getCatalog } from "@/lib/data";
+import { href, type RouteKey } from "@/lib/i18n";
+import { absUrl } from "@/lib/seo";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [books, authors] = await Promise.all([getBooks(), getAuthors()]);
-  const u = (p: string) => new URL(p, SITE.url).toString();
+  const c = await getCatalog();
+
+  const entry = (key: RouteKey | undefined, slug: string | undefined, priority: number, lastModified?: string) => ({
+    url: absUrl(href("tr", key, slug)),
+    lastModified,
+    priority,
+    alternates: { languages: { tr: absUrl(href("tr", key, slug)), en: absUrl(href("en", key, slug)) } },
+  });
+
   return [
-    { url: u("/"), priority: 1 },
-    { url: u("/kitaplar"), priority: 0.9 },
-    { url: u("/yazarlar"), priority: 0.7 },
-    { url: u("/hakkimizda"), priority: 0.5 },
-    { url: u("/iletisim"), priority: 0.5 },
-    ...books.map((b) => ({ url: u(`/kitaplar/${b.slug}`), priority: 0.8 })),
-    ...authors.map((a) => ({ url: u(`/yazarlar/${a.slug}`), priority: 0.6 })),
+    entry(undefined, undefined, 1),
+    entry("books", undefined, 0.9),
+    entry("authors", undefined, 0.7),
+    entry("about", undefined, 0.5),
+    entry("contact", undefined, 0.5),
+    ...c.books.map((b) => entry("books", b.slug, 0.8, b.updated_at)),
+    ...c.authors.filter((a) => a.bookIds.length).map((a) => entry("authors", a.slug, 0.6)),
+    entry("legal/kvkk", undefined, 0.2),
+    entry("legal/gizlilik", undefined, 0.2),
+    entry("legal/cerez", undefined, 0.2),
   ];
 }

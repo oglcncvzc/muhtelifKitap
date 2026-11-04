@@ -1,70 +1,62 @@
-# Muhtelif Kitap — web sitesi
+# Muhtelif Kitap — web sitesi ve yönetim paneli
 
-Next.js 16 (App Router, Cache Components) · Tailwind CSS 4 · Supabase · Vercel
+Next.js 16 (App Router, Cache Components) · Tailwind CSS 4 · Supabase (veritabanı, Auth, Storage) · Vercel
+
+- Site: https://muhtelif-kitap.vercel.app (TR) · https://muhtelif-kitap.vercel.app/en (EN)
+- Yönetim paneli: https://muhtelif-kitap.vercel.app/admin · https://muhtelif-kitap-admin.vercel.app
 
 ## Yerelde çalıştırma
 
 ```bash
 npm install
-npm run dev          # http://localhost:3000
+cp .env.example .env.local   # değerleri doldurun
+npm run dev
 ```
 
-Supabase bağlantısı olmadan da çalışır: katalog `data/catalog.ts` dosyasından okunur.
+## Yapı
 
-## Sayfalar
-
-| Yol | İçerik |
+| Klasör | İçerik |
 | --- | --- |
-| `/` | Hero, Muhtelif Spekülatif dizisi, Şiir, Öykü, Çeviri & İnceleme, Başka Kitap |
-| `/kitaplar` | Katalog: tür/dizi filtresi + arama (`?tur=siir`, `?dizi=spekulatif`, `?q=`) |
-| `/kitaplar/[slug]` | Kitap detayı, künye, yazarın diğer kitapları, benzer kitaplar |
-| `/yazarlar`, `/yazarlar/[slug]` | Yazar listesi (A–Z) ve yazar sayfaları |
-| `/hakkimizda` | Yayınevi ve Başka Kitap |
-| `/iletisim` | İletişim formu → Supabase `contact_messages` tablosu |
+| `app/[lang]/` | Herkese açık site (TR/EN). `proxy.ts` TR adreslerini (`/kitaplar`) ve EN adreslerini (`/en/books`) bu iç rotalara yönlendirir |
+| `app/admin/` | Yönetim paneli (kendi root layout'u; Supabase Auth ile giriş) |
+| `lib/data.ts` | Sitenin tüm içeriği tek önbellekli sorguyla (`catalog` etiketi) |
+| `lib/i18n.ts` | Dil yolları, dil seçici, arayüz metinleri (TR/EN) |
+| `supabase/migrations/` | Şema, RLS politikaları, Storage bucket'ları, tetikleyiciler |
 
-## İçerik ekleme
+### Adresler
 
-- **Supabase yokken:** `data/catalog.ts` dosyasına kitap ekleyin, kapağı `public/covers/<slug>.webp` olarak koyun.
-- `description`, `isbn`, `pages`, `publishedYear`, `price`, `buyUrl` alanları doldurulunca kitap sayfasında kendiliğinden görünür.
-- E-posta, Instagram ve adres: `lib/site.ts`.
+| Sayfa | TR | EN |
+| --- | --- | --- |
+| Ana sayfa | `/` | `/en` |
+| Kitaplar | `/kitaplar` · `/kitaplar/[slug]` | `/en/books` · `/en/books/[slug]` |
+| Yazarlar | `/yazarlar` · `/yazarlar/[slug]` | `/en/authors` · `/en/authors/[slug]` |
+| Hakkımızda / İletişim | `/hakkimizda` · `/iletisim` | `/en/about` · `/en/contact` |
+| Yasal | `/kvkk` · `/gizlilik-politikasi` · `/cerez-politikasi` | `/en/kvkk` · `/en/privacy-policy` · `/en/cookie-policy` |
 
-## Supabase kurulumu
+## İçerik yönetimi
 
-1. Supabase'de yeni proje açın.
-2. **SQL Editor**'da sırayla çalıştırın:
-   - `supabase/migrations/20261104000000_init.sql` (tablolar, RLS, `covers` bucket'ı)
-   - `supabase/seed.sql` (15 kitap, 13 yazar — `npm run seed:sql` ile `data/catalog.ts`'den yeniden üretilir)
-3. `.env.example` → `.env.local` kopyalayın, `NEXT_PUBLIC_SUPABASE_URL` ve `NEXT_PUBLIC_SUPABASE_ANON_KEY` girin.
-4. (İsteğe bağlı) Kapakları Storage'a taşımak için `SUPABASE_SERVICE_ROLE_KEY` girip `npm run covers:upload` çalıştırın.
-5. Bundan sonra kitaplar Supabase **Table Editor**'dan düzenlenir. İletişim mesajları `contact_messages` tablosuna düşer.
+Tüm içerik panelden düzenlenir: kitaplar (künye, TR/EN tanıtım, kapak, tadımlık PDF, satış linkleri, SEO), yazarlar, bannerlar, türler, diziler, yayınevleri, mağazalar, sayfalar (Hakkımızda, KVKK, gizlilik, çerez), site ayarları (iletişim bilgileri, öne çıkan kitap, ana sayfa metinleri), iletişim mesajları ve yöneticiler.
 
-**Güvenlik:** Ziyaretçiler (anon) yalnızca yayımlanmış kitapları ve yazarları okuyabilir, yalnızca mesaj ekleyebilir; mesajları okuyamaz. Düzenleme service role / panel üzerinden yapılır.
+Panelden yapılan her kayıt siteyi anında günceller. Supabase panelinden doğrudan yapılan değişiklikler de veritabanı tetikleyicisi (`pg_net` → `/api/revalidate`) sayesinde anında yansır.
 
-### Değişikliklerin anında yansıması
+**Metin biçimi:** paragraflar boş satırla ayrılır; `## ` ile başlayan satır ara başlıktır.
 
-Veri varsayılan olarak saatte bir tazelenir. Anında yansıması için:
+## Güvenlik
 
-1. Vercel'de `REVALIDATE_SECRET` tanımlayın.
-2. Supabase → Database → Webhooks: `books` ve `authors` tablolarında Insert/Update/Delete için
-   `POST https://<alan-adı>/api/revalidate`, header `x-revalidate-secret: <REVALIDATE_SECRET>`.
+- Herkese açık kayıt kapalıdır; yöneticileri yalnızca bir yönetici ekleyebilir (`/admin/yoneticiler`).
+- RLS: ziyaretçiler yalnızca yayımlanmış içeriği okuyabilir ve iletişim formuna yazabilir; tüm yazma işlemleri `is_admin()` ile sınırlıdır.
+- Her Server Action yetkiyi yeniden doğrular. `SUPABASE_SERVICE_ROLE_KEY` yalnızca yönetici ekleme/silmede, yetki doğrulandıktan sonra kullanılır.
 
-### Supabase'in uykuya geçmemesi
+## Ortam değişkenleri (Vercel)
 
-Ücretsiz planda 7 gün istek gelmeyen proje duraklatılır. `vercel.json` içindeki Vercel Cron,
-her gün 06:00 UTC'de `/api/keepalive` adresini çağırır ve veritabanına gerçek bir sorgu atar.
-Vercel'de `CRON_SECRET` tanımlı olmalı (Vercel bunu `Authorization` başlığına kendisi ekler).
-Durumu Vercel → proje → Settings → Cron Jobs ekranından izleyebilir, oradan elle de tetikleyebilirsiniz.
+`NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (sensitive), `REVALIDATE_SECRET`, `CRON_SECRET`
 
-## Vercel'e yayınlama
+## Bakım
 
-1. Projeyi GitHub'a gönderin, Vercel'de **Import** edin.
-2. **Root Directory:** boş bırakın (repo kökü projenin kendisi)
-3. Environment Variables: `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `REVALIDATE_SECRET`, `CRON_SECRET`
-   (`SUPABASE_SERVICE_ROLE_KEY` Vercel'e eklenmez.)
-4. Deploy.
+- **Supabase'in uykuya geçmemesi:** `vercel.json` içindeki Vercel Cron her gün `/api/keepalive`'ı çağırır.
+- **Alan adı alındığında:** Vercel'de domaini ekleyin, `NEXT_PUBLIC_SITE_URL`'i güncelleyin, Supabase Auth → URL Configuration'a ve Vault'taki `revalidate_url`'e yeni adresi yazın, Google Search Console'a sitemap'i (`/sitemap.xml`) gönderin.
 
 ## Tasarım notları
 
-- Yazı tipleri: **Big Shoulders** (logodaki dar, uzun harflere yakın başlıklar), **Newsreader** (metin), **JetBrains Mono** (etiketler).
-- Renkler sitenin kendisinde nötr (kâğıt / mürekkep); rengi kapaklar taşıyor. Kitap sayfasının arka planı kapağın baskın renginden tonlanır.
-- Spekülatif dizi koyu bölümde, şiir dizisi yatay rafta gösterilir.
+- Yazı tipleri: **Big Shoulders** (logodaki dar harflere yakın başlıklar), **Newsreader** (metin), **JetBrains Mono** (etiketler).
+- Nötr palet (siyah, kırık beyaz, açık gri); rengi kapaklar taşır. Kapaklar düz ve net, 3B efekt yok.

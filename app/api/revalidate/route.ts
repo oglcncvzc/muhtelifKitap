@@ -1,5 +1,6 @@
 import { revalidateTag } from "next/cache";
 import { timingSafeEqual } from "node:crypto";
+import { CATALOG_TAG } from "@/lib/data";
 
 /**
  * Supabase Database Webhook'u (books / authors tablolarında insert/update/delete)
@@ -16,6 +17,6 @@ export async function POST(request: Request) {
   ) {
     return Response.json({ ok: false }, { status: 401 });
   }
-  revalidateTag("books", "max");
-  return Response.json({ ok: true, revalidated: "books" });
+  revalidateTag(CATALOG_TAG, "max");
+  return Response.json({ ok: true, revalidated: CATALOG_TAG });
 }
