@@ -58,7 +58,7 @@ Durumu Vercel → proje → Settings → Cron Jobs ekranından izleyebilir, orad
 ## Vercel'e yayınlama
 
 1. Projeyi GitHub'a gönderin, Vercel'de **Import** edin.
-2. **Root Directory:** `web`
+2. **Root Directory:** boş bırakın (repo kökü projenin kendisi)
 3. Environment Variables: `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `REVALIDATE_SECRET`, `CRON_SECRET`
    (`SUPABASE_SERVICE_ROLE_KEY` Vercel'e eklenmez.)
 4. Deploy.
