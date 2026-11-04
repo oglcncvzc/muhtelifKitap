@@ -48,11 +48,18 @@ Veri varsayılan olarak saatte bir tazelenir. Anında yansıması için:
 2. Supabase → Database → Webhooks: `books` ve `authors` tablolarında Insert/Update/Delete için
    `POST https://<alan-adı>/api/revalidate`, header `x-revalidate-secret: <REVALIDATE_SECRET>`.
 
+### Supabase'in uykuya geçmemesi
+
+Ücretsiz planda 7 gün istek gelmeyen proje duraklatılır. `vercel.json` içindeki Vercel Cron,
+her gün 06:00 UTC'de `/api/keepalive` adresini çağırır ve veritabanına gerçek bir sorgu atar.
+Vercel'de `CRON_SECRET` tanımlı olmalı (Vercel bunu `Authorization` başlığına kendisi ekler).
+Durumu Vercel → proje → Settings → Cron Jobs ekranından izleyebilir, oradan elle de tetikleyebilirsiniz.
+
 ## Vercel'e yayınlama
 
 1. Projeyi GitHub'a gönderin, Vercel'de **Import** edin.
 2. **Root Directory:** `web`
-3. Environment Variables: `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `REVALIDATE_SECRET`
+3. Environment Variables: `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `REVALIDATE_SECRET`, `CRON_SECRET`
    (`SUPABASE_SERVICE_ROLE_KEY` Vercel'e eklenmez.)
 4. Deploy.
 
