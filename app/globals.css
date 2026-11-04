@@ -163,6 +163,31 @@ body {
     animation-range: entry 0% cover 40%;
   }
 }
+/* ——— Kapak yelpazesi (öne çıkan kitap) ——— */
+.fan-card {
+  transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--rot));
+  transition: translate 0.35s ease;
+}
+.fan-card:hover,
+.fan-card:focus-visible {
+  translate: 0 -14px;
+}
+@supports (animation-timeline: view()) {
+  .fan-card {
+    animation: fan-open linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 45%;
+  }
+}
+@keyframes fan-open {
+  from {
+    transform: translate(-50%, calc(-50% + 50px)) rotate(0deg);
+  }
+  to {
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--rot));
+  }
+}
+
 @keyframes reveal-up {
   from {
     opacity: 0;

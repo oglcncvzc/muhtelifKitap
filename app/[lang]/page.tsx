@@ -6,6 +6,7 @@ import { BannerSlider, type Slide } from "@/components/site/banner-slider";
 import { BookGrid, bookAuthors, bookTitle, Cover } from "@/components/site/book-card";
 import { AuthorAvatar } from "@/components/site/author-avatar";
 import { Marquee } from "@/components/site/marquee";
+import { CoverFan } from "@/components/site/cover-fan";
 import { ButtonLink, Container, SectionHeading } from "@/components/site/ui";
 import { getCatalog } from "@/lib/data";
 import { getDict, href, isLocale, pick, switchLocalePath } from "@/lib/i18n";
@@ -53,6 +54,12 @@ export default async function Home({ params }: Props) {
   const releases = (newBooks.length ? newBooks : c.books).slice(0, 8);
 
   const featured = c.settings?.featured_book_id ? c.books.find((b) => b.id === c.settings!.featured_book_id) : undefined;
+  // Yelpazede öne çıkanın yanına aynı diziden (yoksa aynı türden) iki kitap
+  const companions = featured
+    ? c.books
+        .filter((b) => b.id !== featured.id && (featured.series_id ? b.series_id === featured.series_id : b.category_id === featured.category_id))
+        .slice(0, 2)
+    : [];
   const featuredText = featured
     ? pick(lang, c.settings?.featured_text_tr, c.settings?.featured_text_en) ||
       excerpt(pick(lang, featured.description_tr, featured.description_en), 320)
@@ -91,10 +98,10 @@ export default async function Home({ params }: Props) {
       {featured && (
         <section className="mt-24 bg-paper-2">
           <Container className="grid items-center gap-10 py-16 md:grid-cols-12 md:gap-16 md:py-20">
-            <Link href={href(lang, "books", featured.slug)} className="tilt-in group mx-auto w-full max-w-[340px] md:col-span-5 md:max-w-none lg:col-span-4 lg:col-start-2">
-              <Cover book={featured} lang={lang} sizes="(min-width: 768px) 30vw, 80vw" />
-            </Link>
-            <div className="reveal md:col-span-7 lg:col-span-6">
+            <div className="md:col-span-6 lg:col-span-5 lg:col-start-1">
+              <CoverFan featured={featured} companions={companions} lang={lang} />
+            </div>
+            <div className="reveal md:col-span-6 lg:col-span-6 lg:col-start-7">
               <p className="label text-muted">{t.featured}</p>
               <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">{bookTitle(lang, featured)}</h2>
               <p className="mt-2 text-xl text-ink-2">{bookAuthors(featured)}</p>
