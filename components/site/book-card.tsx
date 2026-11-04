@@ -87,9 +87,9 @@ export function BookCard({
 
 export function BookGrid({ books, lang, eager = 0 }: { books: BookView[]; lang: Locale; eager?: number }) {
   return (
-    <ul className="grid grid-cols-2 gap-x-5 gap-y-12 sm:gap-x-8 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-10">
+    <ul className="reveal-grid grid grid-cols-2 gap-x-5 gap-y-12 sm:gap-x-8 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-10">
       {books.map((b, i) => (
-        <li key={b.id}>
+        <li key={b.id} className="reveal">
           <BookCard book={b} lang={lang} priority={i < eager} />
         </li>
       ))}

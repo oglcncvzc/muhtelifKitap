@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { BannerSlider, type Slide } from "@/components/site/banner-slider";
 import { BookGrid, bookAuthors, bookTitle, Cover } from "@/components/site/book-card";
 import { AuthorAvatar } from "@/components/site/author-avatar";
+import { Marquee } from "@/components/site/marquee";
 import { ButtonLink, Container, SectionHeading } from "@/components/site/ui";
 import { getCatalog } from "@/lib/data";
 import { getDict, href, isLocale, pick, switchLocalePath } from "@/lib/i18n";
@@ -73,6 +74,7 @@ export default async function Home({ params }: Props) {
           <BannerSlider slides={slides} labels={{ prev: t.prev, next: t.next, slide: lang === "tr" ? "Duyuru" : "Announcement" }} />
         </Container>
       )}
+      <Marquee books={c.books} lang={lang} />
 
       {/* Yeni çıkanlar */}
       <Container className="pt-20">
@@ -89,10 +91,10 @@ export default async function Home({ params }: Props) {
       {featured && (
         <section className="mt-24 bg-paper-2">
           <Container className="grid items-center gap-10 py-16 md:grid-cols-12 md:gap-16 md:py-20">
-            <Link href={href(lang, "books", featured.slug)} className="group mx-auto w-full max-w-[340px] md:col-span-5 md:max-w-none lg:col-span-4 lg:col-start-2">
+            <Link href={href(lang, "books", featured.slug)} className="tilt-in group mx-auto w-full max-w-[340px] md:col-span-5 md:max-w-none lg:col-span-4 lg:col-start-2">
               <Cover book={featured} lang={lang} sizes="(min-width: 768px) 30vw, 80vw" />
             </Link>
-            <div className="md:col-span-7 lg:col-span-6">
+            <div className="reveal md:col-span-7 lg:col-span-6">
               <p className="label text-muted">{t.featured}</p>
               <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">{bookTitle(lang, featured)}</h2>
               <p className="mt-2 text-xl text-ink-2">{bookAuthors(featured)}</p>
@@ -113,7 +115,7 @@ export default async function Home({ params }: Props) {
           <SectionHeading title={t.series} />
           <div className="space-y-16">
             {seriesRows.map(({ s, books }) => (
-              <div key={s.id} className="grid gap-6 lg:grid-cols-12 lg:gap-10">
+              <div key={s.id} className="reveal grid gap-6 lg:grid-cols-12 lg:gap-10">
                 <div className="lg:col-span-3">
                   <h3 className="font-serif text-2xl font-medium">{pick(lang, s.name_tr, s.name_en)}</h3>
                   {pick(lang, s.description_tr, s.description_en) && (
@@ -142,11 +144,11 @@ export default async function Home({ params }: Props) {
       {featuredAuthors.length > 0 && (
         <Container className="pt-24">
           <SectionHeading title={t.ourAuthors} href={href(lang, "authors")} linkLabel={t.allAuthors} />
-          <ul className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-6">
+          <ul className="reveal-grid grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-6">
             {featuredAuthors.map((a) => {
               const first = c.books.find((b) => a.bookIds.includes(b.id));
               return (
-                <li key={a.id}>
+                <li key={a.id} className="reveal">
                   <Link href={href(lang, "authors", a.slug)} className="group block text-center">
                     <AuthorAvatar author={a} fallbackBook={first} className="mx-auto w-full max-w-[160px]" />
                     <p className="mt-4 text-lg leading-tight group-hover:underline underline-offset-4">{a.name}</p>
@@ -161,7 +163,7 @@ export default async function Home({ params }: Props) {
       {/* Kısa hakkımızda */}
       {about && (
         <Container className="pt-24">
-          <div className="grid gap-8 border-t border-ink pt-12 lg:grid-cols-12">
+          <div className="reveal grid gap-8 border-t border-ink pt-12 lg:grid-cols-12">
             <div className="lg:col-span-4">
               <Image src="/brand/muhtelif-logo.png" alt="" width={951} height={564} className="h-20 w-auto" />
             </div>

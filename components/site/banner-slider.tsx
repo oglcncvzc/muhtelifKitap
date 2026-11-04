@@ -38,7 +38,7 @@ export function BannerSlider({ slides, labels }: { slides: Slide[]; labels: { pr
     <section
       aria-roledescription="carousel"
       aria-label={labels.slide}
-      className="relative overflow-hidden bg-paper-2"
+      className="bn-reveal relative overflow-hidden bg-paper-2"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
@@ -51,7 +51,7 @@ export function BannerSlider({ slides, labels }: { slides: Slide[]; labels: { pr
         touchX.current = null;
       }}
     >
-      <div className="relative aspect-[4/5] sm:aspect-[2/1] lg:aspect-[3/1]">
+      <div className="relative aspect-[4/5] sm:aspect-[3/1]">
         {slides.map((s, i) => {
           const visible = i === index;
           const light = s.theme === "light";
@@ -62,30 +62,47 @@ export function BannerSlider({ slides, labels }: { slides: Slide[]; labels: { pr
                 <img
                   src={s.desktop}
                   alt=""
-                  className="absolute inset-0 h-full w-full object-cover object-[right_center]"
+                  className="bn-img absolute inset-0 h-full w-full object-cover object-[right_center]"
                   loading={i === 0 ? "eager" : "lazy"}
                   fetchPriority={i === 0 ? "high" : "auto"}
                   decoding="async"
                 />
               </picture>
               {(s.title || s.subtitle || s.cta) && (
-                <div
-                  className={`absolute inset-x-0 bottom-0 p-6 sm:inset-y-0 sm:right-auto sm:flex sm:w-[44%] sm:flex-col sm:justify-center sm:p-12 lg:p-16 ${
-                    light ? "text-paper" : "text-ink"
-                  }`}
-                >
-                  {s.title && <h2 className="display text-5xl sm:text-5xl lg:text-6xl xl:text-7xl">{s.title}</h2>}
-                  {s.subtitle && <p className={`mt-3 max-w-md text-lg sm:text-xl ${light ? "text-paper/80" : "text-ink-2"}`}>{s.subtitle}</p>}
-                  {s.cta && s.href && (
-                    <span
-                      className={`label mt-6 inline-flex h-11 w-fit items-center gap-2 px-5 ${
-                        light ? "bg-paper text-ink" : "bg-ink text-paper"
-                      }`}
-                    >
-                      {s.cta} <span aria-hidden>→</span>
-                    </span>
-                  )}
-                </div>
+                <>
+                  {/* Okunurluk: yazının arkasına, temaya göre yumuşak geçiş (panelden yüklenen her görselde çalışır) */}
+                  <div
+                    aria-hidden
+                    className={`absolute inset-0 ${
+                      light
+                        ? "bg-gradient-to-t from-black/70 via-black/25 to-transparent sm:bg-gradient-to-r sm:from-black/60 sm:via-black/20 sm:via-40% sm:to-transparent sm:to-55%"
+                        : "bg-gradient-to-t from-paper/90 via-paper/40 to-transparent sm:bg-gradient-to-r sm:from-paper/75 sm:via-paper/25 sm:via-40% sm:to-transparent sm:to-55%"
+                    }`}
+                  />
+                  <div
+                    className={`absolute inset-x-0 bottom-0 p-6 sm:inset-y-0 sm:right-auto sm:flex sm:w-[40%] sm:flex-col sm:justify-center sm:px-[4%] sm:py-0 ${
+                      light ? "text-paper" : "text-ink"
+                    }`}
+                  >
+                    {s.title && (
+                      <h2 className="bn-t1 display text-5xl sm:text-[clamp(2.25rem,4.6vw,4.75rem)]">{s.title}</h2>
+                    )}
+                    {s.subtitle && (
+                      <p className={`bn-t2 mt-3 max-w-md text-lg sm:text-[clamp(0.95rem,1.35vw,1.25rem)] ${light ? "text-paper/85" : "text-ink-2"}`}>
+                        {s.subtitle}
+                      </p>
+                    )}
+                    {s.cta && s.href && (
+                      <span
+                        className={`bn-t3 label mt-6 inline-flex h-11 w-fit items-center gap-2 px-5 sm:mt-[clamp(0.75rem,1.8vw,1.5rem)] ${
+                          light ? "bg-paper text-ink" : "bg-ink text-paper"
+                        }`}
+                      >
+                        {s.cta} <span aria-hidden>→</span>
+                      </span>
+                    )}
+                  </div>
+                </>
               )}
             </>
           );
@@ -97,7 +114,8 @@ export function BannerSlider({ slides, labels }: { slides: Slide[]; labels: { pr
               aria-label={`${i + 1} / ${count}`}
               aria-hidden={!visible}
               inert={!visible}
-              className={`absolute inset-0 transition-opacity duration-700 ${visible ? "opacity-100" : "opacity-0"}`}
+              data-active={visible}
+              className={`bn-slide absolute inset-0 overflow-hidden transition-opacity duration-700 ${visible ? "opacity-100" : "opacity-0"}`}
             >
               {s.href ? (
                 <Link href={s.href} className="block h-full w-full" tabIndex={visible ? 0 : -1}>
@@ -112,7 +130,7 @@ export function BannerSlider({ slides, labels }: { slides: Slide[]; labels: { pr
       </div>
 
       {count > 1 && (
-        <div className="pointer-events-none absolute inset-x-0 top-3 flex items-center justify-end gap-3 px-3 sm:top-auto sm:bottom-6 sm:px-8">
+        <div className="pointer-events-none absolute inset-x-0 top-3 flex items-center justify-end gap-3 px-3 sm:top-auto sm:bottom-[6%] sm:justify-start sm:px-[4%]">
           <div className="pointer-events-auto flex items-center gap-2 bg-paper/90 px-2 py-1 backdrop-blur">
             <button type="button" onClick={() => go(index - 1)} aria-label={labels.prev} className="flex h-9 w-9 items-center justify-center hover:bg-paper-2">
               <span aria-hidden>←</span>

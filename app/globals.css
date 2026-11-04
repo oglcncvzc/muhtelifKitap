@@ -85,6 +85,105 @@ body {
   }
 }
 
+/* ——— Banner ——— */
+/* Açılışta perde gibi soldan açılır */
+.bn-reveal {
+  animation: bn-wipe 1.1s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+@keyframes bn-wipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+/* Aktif slaytta görsel yavaşça yerine oturur, yazılar sırayla yükselir */
+.bn-slide[data-active="true"] .bn-img {
+  animation: bn-zoom 7s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+}
+.bn-slide[data-active="true"] .bn-t1 {
+  animation: rise 0.9s 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.bn-slide[data-active="true"] .bn-t2 {
+  animation: rise 0.9s 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.bn-slide[data-active="true"] .bn-t3 {
+  animation: rise 0.9s 0.65s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes bn-zoom {
+  from {
+    transform: scale(1.07);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+}
+
+/* ——— Kayan kitap adları şeridi ——— */
+.marquee-track {
+  animation: marquee 55s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ——— Kaydırınca beliren içerik (yalnızca destekleyen tarayıcılarda; diğerlerinde içerik normal görünür) ——— */
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: reveal-up linear both;
+    animation-timeline: view();
+    animation-range: entry 5% entry 75%;
+  }
+  /* Aynı satırdaki kartlar sırayla gelsin: sütuna göre artan mesafe */
+  .reveal-grid > :nth-child(4n + 2) {
+    --reveal-y: 70px;
+  }
+  .reveal-grid > :nth-child(4n + 3) {
+    --reveal-y: 100px;
+  }
+  .reveal-grid > :nth-child(4n + 4) {
+    --reveal-y: 130px;
+  }
+  /* Öne çıkan kapak hafif eğik gelir, yerine oturunca düzleşir */
+  .tilt-in {
+    animation: tilt-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 40%;
+  }
+}
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(var(--reveal-y, 40px));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes tilt-in {
+  from {
+    opacity: 0;
+    transform: translateY(60px) rotate(-5deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
