@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #f2efe7;
+  --paper-2: #e9e5da;
+  --ink: #141413;
+  --ink-2: #3b3a36;
+  --muted: #6f6b61;
+  --rule: rgb(20 20 19 / 0.16);
+  --night: #0e100f;
+  --night-2: #171a18;
+  --signal: #d9ff3f;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+  --color-night: var(--night);
+  --color-night-2: var(--night-2);
+  --color-signal: var(--signal);
+  --font-display: var(--font-big-shoulders);
+  --font-serif: var(--font-newsreader);
+  --font-mono: var(--font-jetbrains);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-newsreader), Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* Logodaki "k i t a p" gibi geniş aralıklı mono etiket */
+.label {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.display {
+  font-family: var(--font-big-shoulders), "Arial Narrow", sans-serif;
+  font-variation-settings: "opsz" 72;
+  line-height: 0.88;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+}
+
+/* Kapak: hafif sırt gölgesi ve kâğıt kalınlığı */
+.book {
+  position: relative;
+  box-shadow:
+    0 1px 0 rgb(0 0 0 / 0.04),
+    0 18px 30px -18px rgb(20 20 19 / 0.45),
+    0 6px 10px -6px rgb(20 20 19 / 0.25);
+  transition:
+    transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.book::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgb(0 0 0 / 0.18) 0,
+    rgb(255 255 255 / 0.14) 1.2%,
+    rgb(0 0 0 / 0.06) 3%,
+    transparent 7%
+  );
+}
+.group:hover .book,
+.group:focus-visible .book {
+  transform: translateY(-6px) rotate(-0.6deg);
+  box-shadow:
+    0 1px 0 rgb(0 0 0 / 0.04),
+    0 30px 40px -20px rgb(20 20 19 / 0.5),
+    0 10px 14px -8px rgb(20 20 19 / 0.28);
+}
+
+.marquee {
+  animation: marquee 40s linear infinite;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.rise {
+  animation: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
